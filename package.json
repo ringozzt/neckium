@@ -17,5 +17,12 @@
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "@tensorflow-models/posenet": "^2.2.2",
+    "@tensorflow/tfjs": "^3.19.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.19.0",
+    "@tensorflow/tfjs-converter": "^3.19.0",
+    "@tensorflow/tfjs-core": "^3.19.0"
   }
 }
