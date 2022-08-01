@@ -11,7 +11,8 @@ const initNeckium = async () => {
 
 const runNeckium = async () => {
   console.log('Starting Neckium...')
-  getWebcam()
+
+  // getWebcam()
 }
 
 const getWebcam = () => {
@@ -27,6 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Log message coming from the `request` parameter
     // Send a response message
     initNeckium()
+    runNeckium()
     sendResponse({
       message,
     });
