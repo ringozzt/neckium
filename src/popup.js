@@ -19,95 +19,35 @@ import './popup.css';
     },
   };
 
-  function setupCounter(initialValue = 0) {
-    document.getElementById('counter').innerHTML = initialValue;
-
+  function setUp() {
     document.getElementById('start').addEventListener('click', () => {
-      console.log('start')
+      console.log('Start!');
+
+      // send message to background script to init posenet
       chrome.runtime.sendMessage(
         {
-          type: 'START',
-          payload: {
-            message: 'Start Neckium'
-          }
+          type: 'INIT'
         },
         (response) => {
-          console.log(response.message)
+          console.log(response);
         }
-      )
-    });
+      );
 
-    document.getElementById('stop').addEventListener('click', () => {
+      // send message to content script to start webcam
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, (tabs) => {
+        const message = {
+          type: 'start'
+        }
+        chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+          console.log(response)
+        })
+      })
+    })
+  };
 
-    });
-  }
-
-  // function updateCounter({ type }) {
-  //   counterStorage.get((count) => {
-  //     let newCount;
-
-  //     if (type === 'INCREMENT') {
-  //       newCount = count + 1;
-  //     } else if (type === 'DECREMENT') {
-  //       newCount = count - 1;
-  //     } else {
-  //       newCount = count;
-  //     }
-
-  //     counterStorage.set(newCount, () => {
-  //       document.getElementById('counter').innerHTML = newCount;
-
-  //       // Communicate with content script of
-  //       // active tab by sending a message
-  //       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  //         const tab = tabs[0];
-
-  //         chrome.tabs.sendMessage(
-  //           tab.id,
-  //           {
-  //             type: 'COUNT',
-  //             payload: {
-  //               count: newCount,
-  //             },
-  //           },
-  //           (response) => {
-  //             console.log('Current count value passed to contentScript file');
-  //           }
-  //         );
-  //       });
-  //     });
-  //   });
-  // }
-
-  function restoreCounter() {
-    // Restore count value
-    counterStorage.get((count) => {
-      if (typeof count === 'undefined') {
-        // Set counter value as 0
-        counterStorage.set(0, () => {
-          setupCounter(0);
-        });
-      } else {
-        setupCounter(count);
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', restoreCounter);
-
-  // Communicate with background file by sending a message
-  chrome.runtime.sendMessage(
-    {
-      type: 'GREETINGS',
-      payload: {
-        message: 'Hello, my name is Pop. I am from Popup.',
-      },
-    },
-    (response) => {
-      console.log(response.message);
-    }
-  );
-
-
+  document.addEventListener('DOMContentLoaded', setUp);
 })();
 

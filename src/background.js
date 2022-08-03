@@ -6,40 +6,29 @@ let net = null
 
 const initNeckium = async () => {
   net = await posenet.load()
-  console.log('net init: ', net)
-}
+  console.log('net init: ', net);
+};
 
 const runNeckium = async () => {
-  console.log('Starting Neckium...')
-
-  // getWebcam()
-}
+  getWebcam();
+};
 
 const getWebcam = () => {
 
-}
+};
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(request)
-  if (request.type === 'GREETINGS') {
-    const message = `Hi ${sender.tab ? 'Con' : 'Pop'
-      }, my name is Bac. I am from Background. It's great to hear from you.`;
+  console.log(request);
+  if (request.type === 'INIT') {
+    const message = 'Start neckium';
 
     // Log message coming from the `request` parameter
     // Send a response message
-    initNeckium()
-    runNeckium()
+    initNeckium();
+    runNeckium();
     sendResponse({
       message,
     });
-  }
-  else if (request.type === 'START') {
-    const message = 'Running'
-    console.log(message)
-    runNeckium()
-    sendResponse({
-      message
-    })
   }
 });
 
