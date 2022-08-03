@@ -9,14 +9,6 @@ const initNeckium = async () => {
   console.log('net init: ', net);
 };
 
-const runNeckium = async () => {
-  getWebcam();
-};
-
-const getWebcam = () => {
-
-};
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
   if (request.type === 'INIT') {
@@ -25,7 +17,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // Log message coming from the `request` parameter
     // Send a response message
     initNeckium();
-    runNeckium();
     sendResponse({
       message,
     });

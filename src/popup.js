@@ -39,7 +39,7 @@ import './popup.css';
         currentWindow: true
       }, (tabs) => {
         const message = {
-          type: 'start'
+          type: 'START'
         }
         chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
           console.log(response)

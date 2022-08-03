@@ -1,14 +1,10 @@
-chrome.runtime.sendMessage(
-  {
-    type: 'GREETINGS',
-    payload: {
-      message: 'Hello, my name is Con. I am from ContentScript.',
-    },
-  },
-  (response) => {
-    console.log(response.message);
-  }
-);
+const posenet = require('@tensorflow-models/posenet');
+require("@tensorflow/tfjs-backend-webgl");
+require("@tensorflow/tfjs-backend-cpu");
+
+const video = document.createElement('video')
+document.body.appendChild(video)
+let net = null;
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('request: ', request)
@@ -19,30 +15,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'LEFT': break;
     case 'RIGHT': break;
   }
-  // sendResponse({});
+  sendResponse({});
   return true;
 });
 
+async function init() {
+  net = await posenet.load();
+};
 
+async function start() {
+  await init();
+  console.log('net init: ', net);
 
-function start() {
   console.log('navigator in content: ', navigator);
+
   const constraints = {
     audio: true,
     video: { facingMode: "user" }
   };
   navigator.mediaDevices.getUserMedia(constraints)
-    .then((stream) => {
-      console.log('stream: ', stream)
+    .then(async (stream) => {
+      video.srcObject = stream
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video)
+        }
+      })
+
+      const res = await net.estimatePoses(video, {
+        decodingMethod: 'single-person'
+      })
+      console.log(res)
     })
     .catch((err) => {
       console.log('err: ', err)
     });
-
-  const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
-  console.log(
-    `Page title: '${pageTitle}'`
-  );
 }
 
 function handleUp() {
