@@ -20,7 +20,6 @@ import './popup.css';
   };
 
   function setUp() {
-
     document.getElementById('setup').addEventListener('click', () => {
       console.log('Set up...')
       chrome.tabs.query({

@@ -2,14 +2,6 @@ const posenet = require('@tensorflow-models/posenet');
 require("@tensorflow/tfjs-backend-webgl");
 require("@tensorflow/tfjs-backend-cpu");
 
-const detectorConfig = {
-  architecture: 'MobileNetV1',
-  outputStride: 16,
-  inputResolution: { width: 320, height: 240 },
-  multiplier: 0.75
-};
-
-
 const constraints = {
   audio: true,
   video: {
@@ -30,6 +22,10 @@ document.body.appendChild(video)
 
 let net = null;
 let defaultPose = null;
+let prevPose = null;
+let currPose = null;
+
+let settingInterval = null, detectingInterval = null
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('request: ', request)
@@ -42,6 +38,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   sendResponse({});
   return true;
 });
+
+async function init() {
+  net = await posenet.load();
+  console.log('net init: ', net)
+};
 
 async function setup() {
   await init()
@@ -58,17 +59,18 @@ async function setup() {
 
       async function detect() {
         const res = await net.estimateSinglePose(video);
-        const pose = res[keypoints].slice(0, 5).map(
+        const pose = res.keypoints.slice(0, 5).map(
           i => {
             return i.position
           }
         )
-        console.log('pose: ', pose)
+        defaultPose = pose
+        console.log(defaultPose)
       };
 
-      setInterval(async () => {
+      settingInterval = setInterval(async () => {
         await detect();
-      }, 5000);
+      }, 500);
     })
     .catch((err) => {
       console.log('err: ', err)
@@ -76,13 +78,9 @@ async function setup() {
 }
 
 async function done() {
+  clearInterval(settingInterval)
   video.style.display = 'none';
 }
-
-async function init() {
-  net = await posenet.load();
-  console.log('net init: ', net)
-};
 
 async function start() {
   if (!net || !defaultPose) return;
