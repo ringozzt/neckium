@@ -19,8 +19,12 @@ video.style.top = 0
 video.style.zIndex = 2000
 document.body.appendChild(video)
 
+const verticalStep = 4
+const scrollStep = 10
+const horizonlStep = 5
+
 let net = null;
-let defaultPose = null, prevPose = null, currPose = null;
+let defaultPose = [], prevPose = [], currPose = [];
 
 let settingInterval = null, detectingInterval = null
 
@@ -44,8 +48,55 @@ async function init() {
 
 async function setup() {
   await init()
-  video.style.display = 'block';
-  // set up default pose
+  // const cachePose = chrome.storage.get('default')
+  // console.log(cachePose)
+  if (0) {
+
+  }
+  else {
+    video.style.display = 'block';
+    // set up default pose
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(async (stream) => {
+        video.srcObject = stream;
+        await new Promise((resolve) => {
+          video.onloadedmetadata = () => {
+            resolve(video)
+          }
+        });
+        video.play()
+
+        async function capture() {
+          const res = await net.estimateSinglePose(video);
+          const pose = res.keypoints.slice(0, 5)
+          defaultPose = pose
+        };
+
+        settingInterval = setInterval(async () => {
+          await capture();
+        }, 500);
+      })
+      .catch((err) => {
+        console.log('err: ', err)
+      });
+  }
+}
+
+async function done() {
+  clearInterval(settingInterval)
+  video.style.display = 'none';
+  console.log('Default Pose: ', defaultPose)
+  prevPose = defaultPose
+  // chrome.storage.local.set({ 'default': defaultPose });
+}
+
+async function start() {
+  await init()
+  if (!defaultPose) {
+    console.log('Set Up Default Pose First.')
+    return
+  };
+
   navigator.mediaDevices.getUserMedia(constraints)
     .then(async (stream) => {
       video.srcObject = stream;
@@ -57,17 +108,39 @@ async function setup() {
       video.play()
 
       async function detect() {
-        const res = await net.estimateSinglePose(video);
-        const pose = res.keypoints.slice(0, 5).map(
-          i => {
-            return i.position
+        // Get Current Head Pose
+        const res = await net.estimateSinglePose(video)
+        currPose = res.keypoints.slice(0, 5)
+
+        // Check Vertical and Horizonal Moves
+        const horizonalRes = checkHorizonal()
+        const verticalRes = checkVertical()
+
+        if (horizonalRes === 1) {
+          console.log('Move Right')
+          handleRight()
+        } else if (horizonalRes === -1) {
+          console.log('Move Left')
+          handleLeft()
+        } else {
+          if (verticalRes === 1) {
+            console.log('Move Up')
+            handleUp()
           }
-        )
-        defaultPose = pose
-        console.log(defaultPose)
+          else if (verticalRes === -1) {
+            console.log('Move Down')
+            handleDown()
+          }
+          else {
+            console.log('No Move')
+          }
+        }
+
+        // Update Previous Pose
+        prevPose = [...currPose]
       };
 
-      settingInterval = setInterval(async () => {
+      detectingInterval = setInterval(async () => {
         await detect();
       }, 500);
     })
@@ -76,43 +149,34 @@ async function setup() {
     });
 }
 
-async function done() {
-  clearInterval(settingInterval)
-  video.style.display = 'none';
+async function stop() {
+  clearInterval(detectingInterval)
 }
 
-async function start() {
-  if (!net || !defaultPose) return;
-
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then(async (stream) => {
-      video.srcObject = stream;
-      await new Promise((resolve) => {
-        video.onloadedmetadata = () => {
-          resolve(video)
-        }
-      });
-
-      async function detect() {
-        const res = await net.estimateSinglePose(video)
-        const currPose = res[0].keypoints.slice(0, 5)
-      };
-
-      setInterval(async () => {
-        await detect();
-      }, 5000);
-    })
-    .catch((err) => {
-      console.log('err: ', err)
-    });
+function checkVertical() {
+  const prevDiff = prevPose[0].position.y - currPose[0].position.y
+  const defaultDiff = defaultPose[0].position.y - currPose[0].position.y
+  if (prevDiff < -verticalStep && defaultDiff < -5) {
+    return -1;
+  } else if (prevDiff > verticalStep && defaultDiff > 5) {
+    return 1;
+  }
 }
+
+function checkHorizonal() { }
 
 function handleUp() {
-
+  window.scrollBy({
+    top: -scrollStep,
+    behavior: "smooth",
+  });
 };
 
 function handleDown() {
-
+  window.scrollBy({
+    top: scrollStep,
+    behavior: "smooth",
+  });
 };
 
 function handleLeft() {
