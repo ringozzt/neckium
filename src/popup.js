@@ -20,26 +20,60 @@ import './popup.css';
   };
 
   function setUp() {
+
+    document.getElementById('setup').addEventListener('click', () => {
+      console.log('Set up...')
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, (tabs) => {
+        const messgae = {
+          type: 'SETUP'
+        }
+        chrome.tabs.sendMessage(tabs[0].id, messgae, (response) => {
+          console.log(response)
+        })
+      })
+    })
+
+    document.getElementById('done').addEventListener('click', () => {
+      console.log('Set done.')
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, (tabs) => {
+        const messgae = {
+          type: 'DONE'
+        }
+        chrome.tabs.sendMessage(tabs[0].id, messgae, (response) => {
+          console.log(response)
+        })
+      })
+    })
+
     document.getElementById('start').addEventListener('click', () => {
       console.log('Start!');
-
-      // send message to background script to init posenet
-      chrome.runtime.sendMessage(
-        {
-          type: 'INIT'
-        },
-        (response) => {
-          console.log(response);
-        }
-      );
-
-      // send message to content script to start webcam
       chrome.tabs.query({
         active: true,
         currentWindow: true
       }, (tabs) => {
         const message = {
           type: 'START'
+        }
+        chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+          console.log(response)
+        })
+      })
+    })
+
+    document.getElementById('stop').addEventListener('click', () => {
+      console.log('Stop!');
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, (tabs) => {
+        const message = {
+          type: 'STOP'
         }
         chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
           console.log(response)
