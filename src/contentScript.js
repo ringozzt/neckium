@@ -17,13 +17,10 @@ video.height = 240
 video.style.position = 'absolute'
 video.style.top = 0
 video.style.zIndex = 2000
-video.style.display = 'block';
 document.body.appendChild(video)
 
 let net = null;
-let defaultPose = null;
-let prevPose = null;
-let currPose = null;
+let defaultPose = null, prevPose = null, currPose = null;
 
 let settingInterval = null, detectingInterval = null
 
@@ -33,7 +30,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     case 'SETUP': setup(); break;
     case 'DONE': done(); break;
     case 'START': start(); break;
-    default: break;
+    case 'STOP': stop(); break;
+    default: console.log('Invalid Message.'); break;
   }
   sendResponse({});
   return true;
@@ -46,6 +44,7 @@ async function init() {
 
 async function setup() {
   await init()
+  video.style.display = 'block';
   // set up default pose
   navigator.mediaDevices.getUserMedia(constraints)
     .then(async (stream) => {
