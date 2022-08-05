@@ -20,8 +20,8 @@ video.style.zIndex = 2000
 document.body.appendChild(video)
 
 const verticalStep = 4
-const scrollStep = 10
-const horizonlStep = 5
+const scrollStep = 120
+const horizonlStep = 15
 
 let net = null;
 let defaultPose = [], prevPose = [], currPose = [];
@@ -92,7 +92,7 @@ async function done() {
 
 async function start() {
   await init()
-  if (!defaultPose) {
+  if (!defaultPose.length) {
     console.log('Set Up Default Pose First.')
     return
   };
@@ -161,9 +161,20 @@ function checkVertical() {
   } else if (prevDiff > verticalStep && defaultDiff > 5) {
     return 1;
   }
+  return 0
 }
 
-function checkHorizonal() { }
+function checkHorizonal() {
+  const prevDiff = prevPose[0].position.x - currPose[0].position.x
+  const defaultDiff = defaultPose[0].position.x - currPose[0].position.x
+  if (prevDiff < -horizonlStep && defaultDiff < -5) {
+    return -1
+  }
+  else if (prevDiff > horizonlStep && defaultDiff > 5) {
+    return 1
+  }
+  return 0
+}
 
 function handleUp() {
   window.scrollBy({
