@@ -6,6 +6,14 @@ MichaelYuhe
 
 ## How to use
 
+### Install
+
+1. Mannual Install:
+   Download this repo, install the dependencies, then run `npm run watch` in your terminal in this project folder.
+   You will get a 'build' folder, open your chrome, click extensions - manage extensions - load unzipped extension, and choose that 'build' folder.
+2. Install from the Chrome Web Store:
+   Not availble yet.
+
 ### Set Up
 
 First step, you need to set up your default pose.
