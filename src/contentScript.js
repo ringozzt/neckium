@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('request: ', request)
   switch (request.type) {
     case 'SETUP': setup(); break;
-    case 'DONE': done(); break;
+    case 'SAVE': save(); break;
     case 'START': start(); break;
     case 'STOP': stop(); break;
     default: console.log('Invalid Message.'); break;
@@ -83,7 +83,7 @@ async function setup() {
   }
 }
 
-async function done() {
+async function save() {
   clearInterval(settingInterval)
   video.style.display = 'none';
   console.log('Default Pose: ', defaultPose)

@@ -35,14 +35,14 @@ import './popup.css';
       })
     })
 
-    document.getElementById('done').addEventListener('click', () => {
-      console.log('Set done.')
+    document.getElementById('save').addEventListener('click', () => {
+      console.log('Default pose saved.')
       chrome.tabs.query({
         active: true,
         currentWindow: true
       }, (tabs) => {
         const messgae = {
-          type: 'DONE'
+          type: 'SAVE'
         }
         chrome.tabs.sendMessage(tabs[0].id, messgae, (response) => {
           console.log(response)

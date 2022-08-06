@@ -9,17 +9,15 @@ const initNeckium = async () => {
   console.log('net init: ', net);
 };
 
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  console.log(activeInfo.tabId);
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(request);
   if (request.type === 'INIT') {
-    const message = 'Start neckium';
-
-    // Log message coming from the `request` parameter
-    // Send a response message
-    initNeckium();
-    sendResponse({
-      message,
-    });
+    initNeckium()
+    sendResponse()
   }
 });
 
