@@ -17,10 +17,11 @@ video.height = 240
 video.style.position = 'absolute'
 video.style.top = 0
 video.style.zIndex = 2000
+video.style.display = 'none'
 document.body.appendChild(video)
 
 const verticalStep = 4
-const scrollStep = 120
+const scrollStep = 140
 const horizonlStep = 15
 
 let net = null;
@@ -150,6 +151,7 @@ async function start() {
 }
 
 async function stop() {
+  video.style.display = 'none';
   clearInterval(detectingInterval)
 }
 
