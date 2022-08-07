@@ -52,32 +52,34 @@ import './popup.css';
 
     document.getElementById('start').addEventListener('click', () => {
       console.log('Start!');
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, (tabs) => {
-        const message = {
-          type: 'START'
-        }
-        chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
-          console.log(response)
-        })
-      })
+      // chrome.tabs.query({
+      //   active: true,
+      //   currentWindow: true
+      // }, (tabs) => {
+      //   const message = {
+      //     type: 'START'
+      //   }
+      //   chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+      //     console.log(response)
+      //   })
+      // })
+      chrome.storage.local.set({ 'state': 'START' })
     })
 
     document.getElementById('stop').addEventListener('click', () => {
       console.log('Stop!');
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, (tabs) => {
-        const message = {
-          type: 'STOP'
-        }
-        chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
-          console.log(response)
-        })
-      })
+      // chrome.tabs.query({
+      //   active: true,
+      //   currentWindow: true
+      // }, (tabs) => {
+      //   const message = {
+      //     type: 'STOP'
+      //   }
+      //   chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
+      //     console.log(response)
+      //   })
+      // })
+      chrome.storage.local.set({ 'state': 'STOP' })
     })
   };
 

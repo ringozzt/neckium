@@ -11,6 +11,12 @@ const constraints = {
   }
 };
 
+let isRunning = false
+chrome.storage.local.get(['state'], (res) => {
+  isRunning = res
+})
+console.log(isRunning)
+
 const video = document.createElement('video')
 video.width = 320
 video.height = 240
