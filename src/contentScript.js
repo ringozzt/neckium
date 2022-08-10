@@ -12,10 +12,11 @@ const constraints = {
 };
 
 let isRunning = false
-chrome.storage.local.get(['state'], (res) => {
-  isRunning = res
+chrome.storage.local.get(['state'], async (res) => {
+  if (res.state === 'START') {
+    await start()
+  }
 })
-console.log(isRunning)
 
 const video = document.createElement('video')
 video.width = 320
@@ -55,10 +56,10 @@ async function init() {
 
 async function setup() {
   await init()
-  // const cachePose = chrome.storage.get('default')
-  // console.log(cachePose)
+  const cachePose = await chrome.storage.get('default')
+  console.log(cachePose)
   if (0) {
-
+    defaultPose = cachePose
   }
   else {
     video.style.display = 'block';
@@ -94,11 +95,13 @@ async function save() {
   video.style.display = 'none';
   console.log('Default Pose: ', defaultPose)
   prevPose = defaultPose
-  // chrome.storage.local.set({ 'default': defaultPose });
+  chrome.storage.local.set({ 'default': defaultPose });
 }
 
 async function start() {
   await init()
+  await setup()
+
   if (!defaultPose.length) {
     console.log('Set Up Default Pose First.')
     return
