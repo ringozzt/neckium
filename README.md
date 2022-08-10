@@ -27,10 +27,12 @@ Take it easy, your photos or data will not be upload online.
 After you've set up your default pose already, you can start Neckium.
 Click 'Start' button, Neckium will start running in the background.
 You can move your head vertically to control the vertical scroll of your browser window.
-Or you can move horizonally to switch tabs.
 There will be more interesting and customizable actions comming...
 
 ## Todo
+- Switch tabs
+- Optimize scroll
+- Video uninstall
 
 Powered by Posenet & Tensorflow.js & chrome-extension-cli
 Inspired by Vimium
