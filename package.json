@@ -1,7 +1,7 @@
 {
   "name": "neckium",
   "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "description": "Neckium",
   "private": true,
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
