@@ -14,12 +14,8 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log(request);
   if (request.type === 'INIT') {
     initNeckium()
     sendResponse()
   }
 });
-
-
-

@@ -11,7 +11,7 @@ const constraints = {
   }
 };
 
-let isRunning = false
+// Start automatically
 chrome.storage.local.get(['state'], async (res) => {
   if (res.state === 'START') {
     await start()
@@ -51,43 +51,42 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function init() {
   net = await posenet.load();
-  console.log('net init: ', net)
+  const cachePose = await chrome.storage.local.get('default')
+  console.log('cachePose: ', cachePose.default)
+  if (cachePose) {
+    defaultPose = cachePose.default
+    prevPose = defaultPose
+  }
 };
 
 async function setup() {
-  await init()
-  const cachePose = await chrome.storage.get('default')
-  console.log(cachePose)
-  if (0) {
-    defaultPose = cachePose
-  }
-  else {
-    video.style.display = 'block';
-    // set up default pose
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then(async (stream) => {
-        video.srcObject = stream;
-        await new Promise((resolve) => {
-          video.onloadedmetadata = () => {
-            resolve(video)
-          }
-        });
-        video.play()
+  if (!net) await init()
 
-        async function capture() {
-          const res = await net.estimateSinglePose(video);
-          const pose = res.keypoints.slice(0, 5)
-          defaultPose = pose
-        };
-
-        settingInterval = setInterval(async () => {
-          await capture();
-        }, 500);
-      })
-      .catch((err) => {
-        console.log('err: ', err)
+  video.style.display = 'block';
+  // set up default pose
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(async (stream) => {
+      video.srcObject = stream;
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video)
+        }
       });
-  }
+      video.play()
+
+      async function capture() {
+        const res = await net.estimateSinglePose(video);
+        const pose = res.keypoints.slice(0, 5)
+        defaultPose = pose
+      };
+
+      settingInterval = setInterval(async () => {
+        await capture();
+      }, 500);
+    })
+    .catch((err) => {
+      console.log('err: ', err)
+    });
 }
 
 async function save() {
@@ -99,11 +98,11 @@ async function save() {
 }
 
 async function start() {
-  await init()
-  await setup()
+  if (!net) await init()
 
   if (!defaultPose.length) {
     console.log('Set Up Default Pose First.')
+    await setup()
     return
   };
 
@@ -160,7 +159,7 @@ async function start() {
 }
 
 async function stop() {
-  video.style.display = 'none';
+  video.style.display = 'none'
   clearInterval(detectingInterval)
 }
 
